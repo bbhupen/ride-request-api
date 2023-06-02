@@ -28,6 +28,7 @@ This is a Django application for a ride-request service. It allows users to regi
 ## API Endpoints
 
 The following API endpoints are available for interacting with the application:
+```Please check the file located on base/helpers/constants.py for updated API enpoints```
 
 1. ```POST /register``` Registers a new user (rider).
 
@@ -149,7 +150,67 @@ Sample Response
 
 ```
 
-6. ```GET api/ride/history``` View ride history of either driver or user at a time
+6. ```POST /api/ride/start``` Starts a ride request.
+
+Sample Request
+
+```json
+{
+    "ride_id": 1,
+    "driver_id": 2
+}
+
+```
+Sample Response
+```json
+{
+    "status": "success",
+    "message": "Ride Started"
+}
+
+```
+
+7. ```POST /api/ride/end``` Ends a ride request.
+
+Sample Request
+
+```json
+{
+    "ride_id": 1,
+    "driver_id": 2
+}
+
+```
+Sample Response
+```json
+{
+    "status": "success",
+    "message": "Ride Ended"
+}
+
+```
+
+8. ```POST /api/ride/complete``` Completes a ride request.
+
+Sample Request
+
+```json
+{
+    "ride_id": 1,
+    "driver_id": 2
+}
+
+```
+Sample Response
+```json
+{
+    "status": "success",
+    "message": "Ride Completed"
+}
+
+```
+
+9. ```GET api/ride/history``` View ride history of either driver or user at a time
 
 Sample Params
 
@@ -181,7 +242,7 @@ Sample Response
 
 ```
 
-7. ```POST /api/review/add``` Adds a review for a driver.
+10. ```POST /api/review/add``` Adds a review for a driver.
 
 Sample Request
 ```json
@@ -206,7 +267,7 @@ Sample Response
 }
 ```
 
-8. ```GET /api/review/view``` Retrieves reviews for a driver.
+11. ```GET /api/review/view``` Retrieves reviews for a driver.
 
 Sample Params
 
@@ -236,7 +297,7 @@ Sample Response
 }
 
 ```
-9. ```POST /api/ride/cancel``` Cancels a ride.
+12. ```POST /api/ride/cancel``` Cancels a ride.
 
 Sample Request
 ```json
