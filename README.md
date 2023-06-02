@@ -25,6 +25,58 @@ This is a Django application for a ride-request service. It allows users to regi
 
 5. Access the application at [http://localhost:8000](http://localhost:8000)
 
+### Models
+
+#### User (from `django.contrib.auth.models`)
+
+- This model represents a user in the system and is provided by Django.
+- It is used as a foreign key in other models to establish relationships.
+- No additional fields are added to this model.
+
+#### Token (from `rest_framework.authtoken.models`)
+
+- This model is used for authentication token generation.
+- It is automatically created for each user when a new user is created using the `create_auth_token` signal.
+
+#### Request
+
+- This model represents a ride request made by a user.
+- Fields:
+  - `request_user_id`: Foreign key to the User model representing the user who made the request.
+  - `request_driver_id`: Identification for the driver assigned to the request
+  - `request_pickup_location`: The pickup location for the ride
+  - `request_drop_location`: The drop location for the ride
+  - `request_status`: The status of the ride request
+
+#### Driver
+
+- This model represents a driver in the system.
+- Fields:
+  - `user`: One-to-one relationship with the User model representing the driver's user account.
+  - `is_driver`: Boolean field indicating whether the user is a driver or not.
+  - `driver_vehicle`: The vehicle associated with the driver
+  - `driver_license_no`: The driver's license number
+  - `driver_current_location`: The current location of the driver
+  - `driver_is_driving`: Boolean field indicating whether the driver is currently driving or not.
+  - `driver_is_active`: Boolean field indicating whether the driver is active or not.
+
+#### Review
+
+- This model represents a review given by a user for a driver.
+- Fields:
+  - `review_driver_id`: Identification for the reviewed driver
+  - `review_user_id`: Identification for the user who gave the review
+  - `review_text`: The review text
+  - `review_stars`: The rating stars given for the review
+  - `review_ride_id`: Identification for the ride associated with the review
+
+### Signals
+
+- `create_auth_token`: This signal is triggered when a new user is created.
+- It creates an authentication token for the user using the Token model provided by the Django REST Framework.
+
+
+
 ## API Endpoints
 
 The following API endpoints are available for interacting with the application:
@@ -335,3 +387,13 @@ Sample Response
 4. Authentication in Routes:
    - After successfull login or registrations a user receives the token, which can be stored on the local storage or somewhere. Which later needs to be passed on to the Header with `Token <token>` on the authenticated request routes. 
    - Only requests with valid tokens will be allowed access.
+
+
+### Usage
+
+- These models can be used as a foundation for building a ride request system.
+- Users can create ride requests, and drivers can be assigned to those requests.
+- The models provide fields to track the status of requests, driver information, and reviews.
+- Additional functionality, views, and endpoints can be implemented based on the specific requirements of the application.
+
+
