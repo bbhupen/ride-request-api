@@ -25,6 +25,8 @@ This is a Django application for a ride-request service. It allows users to regi
 
 5. Access the application at [http://localhost:8000](http://localhost:8000)
 
+* Navigate to ```base/helpers/enpoints.postman_collection``` for a sample postman collection for testing consisting of all the routes.
+
 ### Models
 
 #### User (from `django.contrib.auth.models`)
@@ -80,7 +82,8 @@ This is a Django application for a ride-request service. It allows users to regi
 ## API Endpoints
 
 The following API endpoints are available for interacting with the application:
-```Please check the file located on base/helpers/constants.py for updated API enpoints```
+Please check the file located on ```base/helpers/constants.py``` for updated API enpoints.
+
 
 1. ```POST /register``` Registers a new user (rider).
 
