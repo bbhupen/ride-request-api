@@ -16,18 +16,20 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 class Request(models.Model):
 
     REQUEST_STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('approved', 'Approved'),
-        ('rejected', 'Rejected'),
-        ('cancelled', 'Cancelled')
+        ('pending', 'Pending'),         # default status, when the request is created.
+        ('active', 'Active'),           # when the ride is started
+        ('approved', 'Approved'),       # when the driver accepts the request, the status is changed to approved.
+        ('cancelled', 'Cancelled'),     # when the driver or user cancels the ride after the approval, the status is changed to cancelled.
+        ('ended', 'Ended'),             # when the driver or user end the ride while the status is on active.
+        ('completed', 'Completed'),     # when the ride completes without any problem
+        
     ]
 
     request_user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     request_driver_id = models.CharField(max_length=20)
     request_pickup_location = models.CharField(max_length=20)
     request_drop_location = models.CharField(max_length=20)
-    request_status = models.CharField(
-        max_length=20, choices=REQUEST_STATUS_CHOICES)
+    request_status = models.CharField(max_length=20, choices=REQUEST_STATUS_CHOICES)
 
 
 class Driver(models.Model):
@@ -35,6 +37,9 @@ class Driver(models.Model):
     is_driver = models.BooleanField(default=False)
     driver_vehicle = models.CharField(max_length=256)
     driver_license_no = models.CharField(max_length=256, default="AS09")
+    driver_current_location = models.CharField(max_length=30, default=0)
+    driver_is_driving = models.BooleanField(default=False)
+    driver_is_active = models.BooleanField(default=True)
 
 
 class Review(models.Model):

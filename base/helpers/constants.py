@@ -83,56 +83,48 @@ apiRoutesData = ({
             }
         },
 
-        "POST /api/review/add": {
+        "POST /api/ride/start": {
             "Sample Request": {
-                "review_driver_id": 22,
-                "review_user_id": 2,
-                "review_text": "Very Professional",
-                "review_stars": 4
+                "ride_id": 2,
+                "driver_id": 2
             },
             "Sample Response": {
                 "status": "success",
-                "data": {
-                    "id": 3,
-                    "review_driver_id": "22",
-                    "review_user_id": "1",
-                    "review_text": "Very Professional",
-                    "review_stars": "4"
-                }
+                "message": "Ride Started"
             }
-        },
-
-        "GET /api/review/view": {
-            "Sample Params": "?review_driver_id=22",
-            "Response": {"status": "success",
-                         "data": [
-                             {
-                                 "id": 1,
-                                 "review_driver_id": "22",
-                                 "review_user_id": "21",
-                                 "review_text": "Professional",
-                                 "review_stars": "3"
-                             },
-                             {
-                                 "id": 2,
-                                 "review_driver_id": "22",
-                                 "review_user_id": "21",
-                                 "review_text": "Very good driver",
-                                 "review_stars": "4"
-                             }
-                         ]}
         },
         "POST /api/ride/cancel": {
             "Sample Request": {
-                "ride_id": 2
+                "ride_id": 2,
+                "(optional) driver_id": 2
             },
             "Sample Response": {
                 "status": "success",
                 "message": "Ride Cancelled"
             }
         },
-        "POST /api/ride/cancel": {
-            "Sample Params": "driver_id for driver ride history and ride id for user_id for user ride hitory",
+        "POST /api/ride/end": {
+            "Sample Request": {
+                "ride_id": 2,
+                "driver_id": 2
+            },
+            "Sample Response": {
+                "status": "success",
+                "message": "Ride Ended"
+            }
+        },
+        "POST /api/ride/complete": {
+            "Sample Request": {
+                "ride_id": 2,
+                "driver_id": 2
+            },
+            "Sample Response": {
+                "status": "success",
+                "message": "Ride Completed"
+            }
+        },
+        "GET api/ride/history": {
+            "Sample Params": "driver_id for driver ride history and ride id for user_id for user ride history",
             "Sample Response": {
                 "status": "success",
                 "data": [
@@ -154,6 +146,45 @@ apiRoutesData = ({
                     }
                 ]
             }
-        }
+        },
+
+        "POST /api/review/add": {
+            "Sample Request": {
+                "review_driver_id": 22,
+                "review_user_id": 2,
+                "review_text": "Very Professional",
+                "review_stars": 4
+            },
+            "Sample Response": {
+                "status": "success",
+                "data": {
+                    "id": 3,
+                    "review_driver_id": "22",
+                    "review_user_id": "1",
+                    "review_text": "Very Professional",
+                    "review_stars": "4"
+                }
+            }
+        },
+         "GET /api/review/view": {
+            "Sample Params": "?review_driver_id=22",
+            "Response": {"status": "success",
+                         "data": [
+                             {
+                                 "id": 1,
+                                 "review_driver_id": "22",
+                                 "review_user_id": "21",
+                                 "review_text": "Professional",
+                                 "review_stars": "3"
+                             },
+                             {
+                                 "id": 2,
+                                 "review_driver_id": "22",
+                                 "review_user_id": "21",
+                                 "review_text": "Very good driver",
+                                 "review_stars": "4"
+                             }
+                         ]}
+        },
     }
 })

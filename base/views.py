@@ -5,7 +5,7 @@ from rest_framework.authtoken.serializers import AuthTokenSerializer
 from django.contrib.auth import login
 from rest_framework.authtoken.models import Token
 from .serializers import UserSerializer, RequestSerializer, DriverSerializer, ReviewSerializer, RegisterSerializer, RideHistorySerializer
-from .models import Request, Review, Request
+from .models import Request, Review, Request, Driver
 from .helpers.constants import apiRoutesData
 
 
@@ -44,9 +44,8 @@ class UserView(APIView):
 
         })
 
+
 # Login
-
-
 class LoginView(APIView):
 
     def post(self, request, format=None):
@@ -96,13 +95,38 @@ class ApplyDriver(APIView):
 
 # Ride Request
 class RideRequestView(APIView):
-
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        data = request.data.copy()
         serializer = RequestSerializer(data=request.data)
+
+        try:
+            driver_obj = Driver.objects.get(user=data['request_user_id'])
+            if (driver_obj.is_driver):
+                return Response(
+                    {
+                        "status": "failed",
+                        "message": "some unexpected error occurred"
+                    }
+                )
+        except Driver.DoesNotExist:
+            pass
+
+
         if serializer.is_valid():
             new_ride_request = serializer.save()
+            
+            #
+            # some FUNCTION which sends the ride request to the drivers near to the pickup location using somekind of notification system
+            # Logic of the function
+            # func(ride_id):
+            #       sort all drivers who are currently in is_driving=False state, according to the distance from the pickup location
+            #       distance might be calculate using some libraries
+            #       driver closest to the pickup location will get the request first
+            #       driver can accept or pass using 'api/ride/accept or using some pass function respectively'
+            #
+
             serialized_request = RequestSerializer(new_ride_request)
 
             return Response(
@@ -128,14 +152,79 @@ class RideAcceptView(APIView):
     def post(self, request):
         data = request.data.copy()
         request_obj = Request.objects.get(id=data["ride_id"])
-        if (request_obj):
+        driver_obj = Driver.objects.get(user=data['driver_id'])
+        if (request_obj and driver_obj.driver_is_active == True and driver_obj.driver_is_driving == False):
+
             request_obj.request_driver_id = data["driver_id"]
             request_obj.request_status = "approved"
+            driver_obj.driver_is_driving = True
+
+            driver_obj.save()
             request_obj.save()
             return Response(
                 {
                     "status": "success",
                     "message": "Ride Accepted"
+                }
+            )
+
+        return Response(
+            {
+                "status": "failed",
+                "message": "Some unexpected error occurred"
+            }
+        )
+
+# Ride Start
+
+
+class RideStartView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        data = request.data.copy()
+        request_obj = Request.objects.get(id=data["ride_id"])
+
+        if (request_obj.request_status == "approved"):
+
+            request_obj.request_status = "active"
+            request_obj.save()
+            return Response(
+                {
+                    "status": "success",
+                    "message": "Ride Started"
+                }
+            )
+
+        return Response(
+            {
+                "status": "failed",
+                "message": "Some unexpected error occurred"
+            }
+        )
+
+
+# Ride End
+class RideEndView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        data = request.data.copy()
+        request_obj = Request.objects.get(id=data["ride_id"])
+        driver_obj = Driver.objects.get(user=data['driver_id'])
+        if (request_obj.request_status == "active" and driver_obj.driver_is_active == True and driver_obj.driver_is_driving == True):
+
+            request_obj.request_status = "ended"
+            driver_obj.driver_is_driving = False
+
+            driver_obj.save()
+            request_obj.save()
+            return Response(
+                {
+                    "status": "success",
+                    "message": "Ride Ended"
                 }
             )
 
@@ -155,13 +244,97 @@ class RideCancelView(APIView):
     def post(self, request):
         data = request.data.copy()
         request_obj = Request.objects.get(id=data["ride_id"])
-        if (request_obj.request_status != "cancelled") & (request_obj.request_status != "approved") & (request_obj.request_status != "rejected"):
+
+        if 'driver_id' in data:
+            driver_obj = Driver.objects.get(user=data['driver_id'])
+
+        # executes when the user cancels before any driver approves the ride request
+        if (request_obj.request_status == "pending"):
+
             request_obj.request_status = "cancelled"
             request_obj.save()
             return Response(
                 {
                     "status": "success",
                     "message": "Ride Cancelled"
+                }
+            )
+
+        # executes when the user cancels after any driver approves the ride request
+        if (request_obj.request_status == "approved" and driver_obj.driver_is_active == True and driver_obj.driver_is_driving == True):
+
+            request_obj.request_status = "cancelled"
+            driver_obj.driver_is_driving = False
+
+            driver_obj.save()
+            request_obj.save()
+            return Response(
+                {
+                    "status": "success",
+                    "message": "Ride Cancelled"
+                }
+            )
+
+        return Response(
+            {
+                "status": "failed",
+                "message": "Some unexpected error occurred"
+            }
+        )
+
+# Ride Complete
+
+
+class RideCompleteView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        data = request.data.copy()
+        request_obj = Request.objects.get(id=data["ride_id"])
+        driver_obj = Driver.objects.get(user=data['driver_id'])
+        if (request_obj.request_status == "active" and driver_obj.driver_is_active == True and driver_obj.driver_is_driving == True):
+
+            request_obj.request_status = "completed"
+            driver_obj.driver_is_driving = False
+
+            driver_obj.save()
+            request_obj.save()
+            return Response(
+                {
+                    "status": "success",
+                    "message": "Ride Completed"
+                }
+            )
+
+        return Response(
+            {
+                "status": "failed",
+                "message": "Some unexpected error occurred"
+            }
+        )
+
+
+# Ride End
+class RideEndView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        data = request.data.copy()
+        request_obj = Request.objects.get(id=data["ride_id"])
+        driver_obj = Driver.objects.get(user=data['driver_id'])
+        if (request_obj.request_status == "active" and driver_obj.driver_is_active == True and driver_obj.driver_is_driving == True):
+
+            request_obj.request_status = "ended"
+            driver_obj.driver_is_driving = False
+
+            driver_obj.save()
+            request_obj.save()
+            return Response(
+                {
+                    "status": "success",
+                    "message": "Ride Ended"
                 }
             )
 
