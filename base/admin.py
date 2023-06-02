@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import Request, Driver
+from .models import Request, Driver, Review
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 # admin.site.register(Post)
@@ -15,7 +15,8 @@ class DriverInline(admin.StackedInline):
 
 class customUserAdmin (UserAdmin):
     inlines = (DriverInline, )
-    
+
+admin.site.register(Review)
 admin.site.register(Request)
 admin.site.register(Driver)
 admin.site.unregister(User)

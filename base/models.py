@@ -1,6 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)
+
 
 class Request(models.Model):
 
@@ -11,7 +21,7 @@ class Request(models.Model):
         ('cancelled', 'Cancelled')
     ]
 
-    request_user_id = models.CharField(max_length=20)
+    request_user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     request_driver_id = models.CharField(max_length=20)
     request_pickup_location = models.CharField(max_length=20)
     request_drop_location = models.CharField(max_length=20)
@@ -25,7 +35,7 @@ class Driver(models.Model):
     
 
 class Review(models.Model):
-    review_driver_id = models.CharField(max_length=20)
-    review_user_id = models.CharField(max_length=20)
+    review_driver_id = models.CharField(max_length=5)
+    review_user_id = models.CharField(max_length=5)
     review_text = models.CharField(max_length=500)
     review_stars = models.CharField(max_length=1)
