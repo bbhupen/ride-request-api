@@ -25,6 +25,11 @@ class RequestSerializer(serializers.ModelSerializer):
         model = Request
         fields = ['id', 'request_user_id', 'request_pickup_location', 'request_drop_location', 'request_status']
 
+class RideHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Request
+        fields = '__all__'
+
 class DriverSerializer(serializers.ModelSerializer):
     class Meta:
         model = Driver

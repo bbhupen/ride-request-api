@@ -16,8 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from base.views import UserView, RideRequestView, ApplyDriver, RideAcceptView, RideCancelView,HomeView, LoginView, AddReviewView, ReviewView
-from rest_framework.authtoken.views import obtain_auth_token
+from base.views import UserView, RideRequestView, ApplyDriver, RideAcceptView, RideCancelView,HomeView, LoginView, AddReviewView, ReviewView, RideHistoryView
 
 urlpatterns = [
     path('', HomeView.as_view(), name='home'),
@@ -29,6 +28,7 @@ urlpatterns = [
     path('api/ride/request', RideRequestView.as_view(), name="ride-request"),
     path('api/ride/accept', RideAcceptView.as_view(), name="accept-request"),
     path('api/ride/cancel', RideCancelView.as_view(), name="accept-request"),
+    path('api/ride/history', RideHistoryView.as_view(), name="view-ride-history"),
     path('api/review/add', AddReviewView.as_view(), name="add-review"),
-    path('api/review/view', ReviewView.as_view(), name="view-review")
+    path('api/review/view', ReviewView.as_view(), name="view-review"),
 ]

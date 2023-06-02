@@ -6,6 +6,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 
+
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
@@ -25,17 +26,20 @@ class Request(models.Model):
     request_driver_id = models.CharField(max_length=20)
     request_pickup_location = models.CharField(max_length=20)
     request_drop_location = models.CharField(max_length=20)
-    request_status = models.CharField(max_length=20, choices=REQUEST_STATUS_CHOICES)
-    
+    request_status = models.CharField(
+        max_length=20, choices=REQUEST_STATUS_CHOICES)
+
+
 class Driver(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     is_driver = models.BooleanField(default=False)
     driver_vehicle = models.CharField(max_length=256)
     driver_license_no = models.CharField(max_length=256, default="AS09")
-    
+
 
 class Review(models.Model):
     review_driver_id = models.CharField(max_length=5)
     review_user_id = models.CharField(max_length=5)
     review_text = models.CharField(max_length=500)
     review_stars = models.CharField(max_length=1)
+    review_ride_id = models.CharField(max_length=5, default=0)

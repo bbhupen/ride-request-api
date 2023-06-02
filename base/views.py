@@ -4,8 +4,8 @@ from rest_framework.views import Response
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from django.contrib.auth import login
 from rest_framework.authtoken.models import Token
-from .serializers import UserSerializer, RequestSerializer, DriverSerializer, ReviewSerializer, RegisterSerializer
-from .models import Request, Review
+from .serializers import UserSerializer, RequestSerializer, DriverSerializer, ReviewSerializer, RegisterSerializer, RideHistorySerializer
+from .models import Request, Review, Request
 from .helpers.constants import apiRoutesData
 
 
@@ -17,6 +17,8 @@ class HomeView(APIView):
         )
 
 # Register User
+
+
 class UserView(APIView):
     serializer_class = RegisterSerializer
 
@@ -43,6 +45,8 @@ class UserView(APIView):
         })
 
 # Login
+
+
 class LoginView(APIView):
 
     def post(self, request, format=None):
@@ -62,6 +66,8 @@ class LoginView(APIView):
         )
 
 # Apply for driver
+
+
 class ApplyDriver(APIView):
 
     permission_classes = [IsAuthenticated]
@@ -88,7 +94,7 @@ class ApplyDriver(APIView):
         )
 
 
-#Ride Request
+# Ride Request
 class RideRequestView(APIView):
 
     permission_classes = [IsAuthenticated]
@@ -208,5 +214,49 @@ class ReviewView(APIView):
             {
                 "status": "failed",
                 "data": 'review_driver_id is required'
+            }
+        )
+
+
+class RideHistoryView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        driver_id = request.GET.get('driver_id')
+        user_id = request.GET.get('user_id')
+
+        if (driver_id and user_id):
+            return Response(
+                {
+                    "status": "failed",
+                    "data": "Some unexpected error occurred"
+                }
+            )
+
+        if (driver_id):
+            ride_history = Request.objects.filter(request_driver_id=driver_id)
+            serializer = RideHistorySerializer(ride_history, many=True)
+            return Response(
+                {
+                    "status": "success",
+                    "data": serializer.data
+                }
+            )
+
+        if (user_id):
+            ride_history = Request.objects.filter(request_user_id=user_id)
+            serializer = RideHistorySerializer(ride_history, many=True)
+            return Response(
+                {
+                    "status": "success",
+                    "data": serializer.data
+                }
+            )
+
+        return Response(
+            {
+                "status": "failed",
+                "data": "Some unexpected error occurred"
             }
         )
