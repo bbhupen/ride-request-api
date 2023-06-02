@@ -302,7 +302,8 @@ Sample Response
 Sample Request
 ```json
 {
-    "ride_id": 2
+    "ride_id": 2, 
+    optional "driver_id": 2
 }
 
 ```
